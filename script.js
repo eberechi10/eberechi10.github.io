@@ -1,7 +1,9 @@
-const cityInput = document.querySelector(".city-input");
+const cityInput = document.querySelector(".city-input"); // the input selector
 const searchButton = document.querySelector(".search-btn");
+
 const locationButton = document.querySelector(".location-btn");
 const currentWeatherDiv = document.querySelector(".current-weather");
+
 const weatherCardsDiv = document.querySelector(".weather-cards");
 
 const API_KEY = "e855bb1d6d8b0fa747af89ab25001faf"; // the API key from OpenWeatherMap API
@@ -11,6 +13,7 @@ const createWeatherCard = (cityName, weatherItem, index) => {
         return `<div class="details">
                     <h2>${cityName} (${weatherItem.dt_txt.split(" ")[0]})</h2>
                     <h6>Temperature: ${(weatherItem.main.temp - 273.15).toFixed(2)}°C</h6>
+                    
                     <h6>Wind: ${weatherItem.wind.speed} M/S</h6>
                     <h6>Humidity: ${weatherItem.main.humidity}%</h6>
                 </div>
@@ -33,21 +36,23 @@ const getWeatherDetails = (cityName, latitude, longitude) => {
     const WEATHER_API_URL = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${API_KEY}`;
 
     fetch(WEATHER_API_URL).then(response => response.json()).then(data => {
-        // Filter the forecasts to get only one forecast per day
+        // used for forecasts to get only one forecast
         const uniqueForecastDays = [];
+        
         const fiveDaysForecast = data.list.filter(forecast => {
             const forecastDate = new Date(forecast.dt_txt).getDate();
+            
             if (!uniqueForecastDays.includes(forecastDate)) {
                 return uniqueForecastDays.push(forecastDate);
             }
         });
 
-        // Clearing previous weather data
+        // Clear old weather data
         cityInput.value = "";
         currentWeatherDiv.innerHTML = "";
         weatherCardsDiv.innerHTML = "";
 
-        // Creating weather cards and adding them to the DOM
+        // generates weather cards and adding them to the DOM
         fiveDaysForecast.forEach((weatherItem, index) => {
             const html = createWeatherCard(cityName, weatherItem, index);
             if (index === 0) {
@@ -66,9 +71,10 @@ const getCityCoordinates = () => {
     if (cityName === "") return;
     const API_URL = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${API_KEY}`;
     
-    // Get entered city coordinates (latitude, longitude, and name) from the API response
+    // get city coordinates (latitude, longitude, and name) from the API response
     fetch(API_URL).then(response => response.json()).then(data => {
         if (!data.length) return alert(`No coordinates found for ${cityName}`);
+        
         const { lat, lon, name } = data[0];
         getWeatherDetails(name, lat, lon);
     }).catch(() => {
@@ -79,8 +85,9 @@ const getCityCoordinates = () => {
 const getUserCoordinates = () => {
     navigator.geolocation.getCurrentPosition(
         position => {
-            const { latitude, longitude } = position.coords; // Get coordinates of user location
-            // Get city name from coordinates using reverse geocoding API
+            const { latitude, longitude } = position.coords; // get the coordinates of user location
+            
+            // get city from coordinates using reverse geocoding API
             const API_URL = `https://api.openweathermap.org/geo/1.0/reverse?lat=${latitude}&lon=${longitude}&limit=1&appid=${API_KEY}`;
             fetch(API_URL).then(response => response.json()).then(data => {
                 const { name } = data[0];
@@ -89,7 +96,7 @@ const getUserCoordinates = () => {
                 alert("An error occurred while fetching the city name!");
             });
         },
-        error => { // Show alert if user denied the location permission
+        error => { // it show alert if denied the location permission
             if (error.code === error.PERMISSION_DENIED) {
                 alert("Geolocation request denied. Please reset location permission to grant access again.");
             } else {
@@ -99,5 +106,6 @@ const getUserCoordinates = () => {
 }
 
 locationButton.addEventListener("click", getUserCoordinates);
+
 searchButton.addEventListener("click", getCityCoordinates);
 cityInput.addEventListener("keyup", e => e.key === "Enter" && getCityCoordinates());
