@@ -180,3 +180,12 @@ h1 {
     font-size: 1.35rem;
   }
 }
+.footer {
+ background: #5372F0;
+  font-size: 1.75rem;
+  text-align: center;
+  padding: 18px 0;
+ font-weight: 600;
+ padding: 20px 70px 20px 20px;
+  color: #fff;
+}
