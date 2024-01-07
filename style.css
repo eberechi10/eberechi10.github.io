@@ -180,7 +180,7 @@ h1 {
     font-size: 1.35rem;
   }
 }
-@footer {
+footer {
  background: #5372F0;
   font-size: 1.75rem;
   text-align: center;
@@ -188,6 +188,6 @@ h1 {
  padding: 20px;
   color: #fff;
 }
-.footer p .h3 {
+.footer h3 {
   margin: 0; 
 }
